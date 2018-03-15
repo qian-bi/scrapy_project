@@ -34,7 +34,7 @@ class JsonWithEncodingPipeline:
 class OraclePipeline:
 
     def __init__(self):
-        dsn = cx_Oracle.makedsn(host='10.101.37.70', port=1521, sid='orcl')
+        dsn = cx_Oracle.makedsn(host='localhost', port=1521, sid='orcl')
         self.conn = cx_Oracle.connect(user='scrapy', password='scrapy', dsn=dsn)
         self.cur = self.conn.cursor()
 

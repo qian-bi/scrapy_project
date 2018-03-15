@@ -36,6 +36,7 @@ class AuthorSpider(scrapy.Spider):
 
     @staticmethod
     def parse_author(response):
+
         def extract_with_css(query):
             return response.css(query).extract_first().strip()
 

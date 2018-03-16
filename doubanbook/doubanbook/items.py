@@ -20,7 +20,6 @@ class DoubanbookItem(Item):
 class DoubanSubjectItem(Item):
     title = Field()
     url = Field()
-    info = Field()
     rate = Field()
     votes = Field()
     content_intro = Field()

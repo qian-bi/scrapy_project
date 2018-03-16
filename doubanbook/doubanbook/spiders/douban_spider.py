@@ -13,7 +13,7 @@ class DoubanbookSpider(CrawlSpider):
     allowed_domains = ['douban.com']
     start_urls = ['https://book.douban.com/tag/']
     rules = [
-        Rule(LinkExtractor(allow=('/subject/\d+$', )), callback='parse_2'),
+        Rule(LinkExtractor(allow=('/subject/\d+/$')), callback='parse_2'),
         Rule(LinkExtractor(allow=('/tag/[^/]+$', )), follow=True),
     ]
     logger = logging.getLogger('doubanbook')
@@ -21,17 +21,26 @@ class DoubanbookSpider(CrawlSpider):
     def parse_1(self, response):
         self.logger.info('parsed ' + str(response))
 
-    @staticmethod
-    def parse_2(response):
+    def parse_2(self, response):
+        self.logger.info('link: ' + response.url)
         items = []
         sel = Selector(response)
-        sites = sel.css('#wraper')
+        sites = sel.css('#wrapper')
 
         for site in sites:
             item = DoubanSubjectItem()
-            item['title'] = site.css('h1 span::text').extract()
-            site['url'] = response.url
-            item['content_intro'] = site.css('#link-report .intro p::text').extract()
+            item['title'] = ''.join(site.css('h1 span::text').extract())
+            item['url'] = response.url
+            item['rate'] = float(site.css('.ll.rating_num::text').extract_first().strip())
+            item['votes'] = int(site.css('span [property="v:votes"]::text').extract_first())
+            intro = site.css('.related_info .indent .intro')
+            content_intro = site.css('#link-report .intro')
+            item['content_intro'] = ''.join(content_intro[-1].css('p::text').extract())
+            if len(intro) > len(content_intro):
+                item['author_intro'] = ''.join(intro[-1].css('p::text').extract())
+            else:
+                item['author_intro'] = ''
+            item['tags'] = ', '.join(site.css('#db-tags-section a::text').extract())
             items.append(item)
         return items
 

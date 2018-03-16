@@ -39,8 +39,8 @@ class OraclePipeline:
         self.cur = self.conn.cursor()
 
     def process_item(self, item, spider):
-        self.cur.prepare("INSERT INTO DOUBANSUBJECTITEM(TITLE, URL, CONTENT_INTRO) VALUES (:title, :url, :content_intro)")
-        self.cur.executemany(None, item)
+        insert_stat = "INSERT INTO DOUBANSUBJECTITEM(TITLE, URL, RATE, VOTES, CONTENT_INTRO, AUTHOR_INTRO, TAGS) VALUES (:0, :1, :2, :3, :4, :5, :6)"
+        self.cur.execute(insert_stat, [item['title'], item['url'], item['rate'], item['votes'], item['content_intro'], item['author_intro'], item['tags']])
         return item
 
     def close_spider(self, spider):
